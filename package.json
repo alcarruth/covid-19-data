@@ -1,0 +1,26 @@
+{
+  "name": "corona_virus",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "/opt/git/Corona_Virus"
+  },
+  "keywords": [
+    "Corona",
+    "Virus",
+    "Covid",
+    "Covid-19"
+  ],
+  "author": "Al Carruth",
+  "license": "ISC",
+  "dependencies": {
+    "coffeescript": "^2.5.1",
+    "node-fetch": "^2.6.0",
+    "tablesort": "^5.2.0"
+  }
+}

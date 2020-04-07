@@ -1,0 +1,50 @@
+
+
+div#corona-virus-data {
+    width: 80%;
+    margin: auto;
+}
+
+h1 {
+    font-size: 25px;
+    width: 90%;
+    margin: auto;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+table#cv-data-table {
+    width: 90%;
+    margin: auto;
+}
+
+td.cv-data-rank {
+    text-align:right;
+    width: 4%;
+}
+
+td.cv-data-country {
+    text-align:left;
+    width: 32%;
+}
+
+td.cv-data-number {
+    text-align:right;
+    width: 12%;
+}
+
+th.cv-data-rank {
+    text-align:right;
+    width: 4%;
+}
+
+th.cv-data-country {
+    text-align:left;
+    width: 32%;
+}
+
+th.cv-data-number {
+    text-align:right;
+    width: 12%;
+}
+
