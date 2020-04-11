@@ -9,7 +9,8 @@ mkdir -p build/js build/css/
 
 coffee -cM -o build/js/ src/covid_data.coffee
 cp src/index.html build/
-cp src/css/* build/css/
+cp src/css/*.css build/css/
+cp src/js/* build/js/
 
 cp node_modules/tablesort/dist/tablesort.min.js build/js/
 cp node_modules/tablesort/dist/sorts/*.js build/js/
