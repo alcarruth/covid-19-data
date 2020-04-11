@@ -8,9 +8,9 @@ else
 
 covid_data_url = "https://pomber.github.io/covid19/timeseries.json"
 
-per_1000 = (x,y) ->
+per_million = (x,y) ->
   if y != 0
-    return (1000 * x / y).toFixed(3)
+    return (1000000 * x / y).toFixed()
   else
     return 0
 
@@ -202,43 +202,57 @@ class Covid_Data
     @url = url || covid_data_url
     @populations = populations
 
-  get_data: =>
+  update: =>
     res = await fetch(@url)
-    data = await res.json()
+    timeseries = await res.json()
+    # most recent is last in list
+    last = timeseries.US.length-1
+    @data = []
+    for country,_ of timeseries
+      population = @populations[country]
+      if population && population > 1000000
+        obj = timeseries[country][last]
+        population = Number.parseInt(population)
+        cases = Number.parseInt(obj.confirmed)
+        cases_per_1000 = per_million(cases,population)
+        deaths = Number.parseInt(obj.deaths)
+        deaths_per_1000 = per_million(deaths,population)
+        @data.push {
+          country,
+          population,
+          cases,
+          cases_per_1000,
+          deaths,
+          deaths_per_1000
+          }
+    @sort_data('cases', 'ascending')
+    return @data
 
-  get_latest: =>
-    data = await @get_data()
-    i = data.US.length-1
-    latest = {}
-    for k,v of data
-      latest[k] = data[k][i]
-    return latest
-
+  sort_data: (column, direction = 'ascending') =>
+    @data.sort (a,b) ->
+      if direction == 'ascending'
+        return a[column] < b[column]
+      if direction == 'descending'
+        return a[column] > b[column]
+  
   create_table_elt: =>
     elt = document.createElement('table')
     elt.setAttribute('id', 'cv-data-table')
     elt.setAttribute('class', 'sort')
-    latest = await @get_latest()
     rows = ""
     row_num = 1
-    for country,obj of latest
-      population = @populations[country]
-      if population && population > 1000
-        cases = obj.confirmed
-        cases_per_1000 = per_1000(cases,population)
-        deaths = obj.deaths
-        deaths_per_1000 = per_1000(deaths,population)
-        rows += """
-          <tr>
-            <td class="cv-data-rank"> #{row_num++} </td>
-            <td class="cv-data-country"> #{country} </td>
-            <td class="cv-data-number"> #{population} </td>
-            <td class="cv-data-number"> #{cases} </td>
-            <td class="cv-data-number"> #{cases_per_1000} </td>
-            <td class="cv-data-number"> #{deaths} </td>
-            <td class="cv-data-number"> #{deaths_per_1000} </td>
-          </tr>
-        """
+    for obj in @data
+      rows += """
+        <tr>
+          <td class="cv-data-rank"> #{row_num++} </td>
+          <td class="cv-data-country"> #{obj.country} </td>
+          <td class="cv-data-number"> #{obj.population} </td>
+          <td class="cv-data-number"> #{obj.cases} </td>
+          <td class="cv-data-number"> #{obj.cases_per_1000} </td>
+          <td class="cv-data-number"> #{obj.deaths} </td>
+          <td class="cv-data-number"> #{obj.deaths_per_1000} </td>
+        </tr>
+      """
     elt.innerHTML = """
         <thead>
           <tr>
@@ -246,9 +260,9 @@ class Covid_Data
             <th class="cv-data-country">Country</th>
             <th class="cv-data-number">Population</th>
             <th class="cv-data-number">Cases</th>
-            <th class="cv-data-number">per 1000</th>
+            <th class="cv-data-number">per Million</th>
             <th class="cv-data-number">Deaths</th>
-            <th class="cv-data-number">per 1000</th>
+            <th class="cv-data-number">per Million</th>
           </tr>
         </thead>
         <tbody>
@@ -259,8 +273,9 @@ class Covid_Data
 
   install: =>
     @parent_elt = document.getElementById(@id)
+    data = await @update()
     @elt = await @create_table_elt()
-    new Tablesort(@elt)
+    #new Tablesort(@elt)
     @parent_elt.appendChild(@elt)
 
 
