@@ -14,6 +14,11 @@ h1 {
     padding-bottom: 20px;
 }
 
+p {
+    width: 90%;
+    margin: auto;
+}
+
 table#cv-data-table {
     width: 90%;
     margin: auto;

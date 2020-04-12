@@ -208,6 +208,10 @@ class Covid_Data
     timeseries = await res.json()
     # most recent is last in list
     last = timeseries.US.length-1
+    @date = timeseries.US[last].date
+    src_elt = document.getElementById('covid-data-src')
+    src_elt.innerText = "covid-19 data source: #{@url}: (fetched #{@date})}"
+    
     @data = []
     for country,_ of timeseries
       population = @populations[country]
