@@ -7,12 +7,11 @@ else
   fetch = require('node-fetch')
 
 covid_data_url = "https://pomber.github.io/covid19/timeseries.json"
+population_url = "https://data.un.org/Data.aspx?d=PopDiv&f=variableID%3a12%3btimeID%3a84%3bvarID%3a2&c=2,7&v=1"
 
 per_million = (x,y) ->
   if y != 0
     return Number((1000000 * x / y).toFixed())
-  else
-    return 0
 
 populations = {
    "Afghanistan": 38041754,
@@ -209,8 +208,14 @@ class Covid_Data
     # most recent is last in list
     last = timeseries.US.length-1
     @date = timeseries.US[last].date
-    src_elt = document.getElementById('covid-data-src')
-    src_elt.innerText = "covid-19 data source: #{@url}: (fetched #{@date})}"
+
+    covid_src_elt = document.getElementById('covid-data-src')
+    link = "<a src=\"#{covid_data_url}\"> #{covid_data_url} </a>"
+    covid_src_elt.innerHTML = "covid-19 data source: #{link}: (fetched #{@date})}"
+
+    pop_src_elt = document.getElementById('un-data-src')
+    link = "<a src=\"#{population_url}\"> https://data.un.org/ </a>"
+    pop_src_elt.innerHTML = "Population data source: #{link}"
     
     @data = []
     for country,_ of timeseries
