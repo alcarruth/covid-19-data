@@ -10,7 +10,7 @@ covid_data_url = "https://pomber.github.io/covid19/timeseries.json"
 
 per_million = (x,y) ->
   if y != 0
-    return (1000000 * x / y).toFixed()
+    return Number((1000000 * x / y).toFixed())
   else
     return 0
 
@@ -202,7 +202,8 @@ class Covid_Data
     @url = url || covid_data_url
     @populations = populations
 
-  update: =>
+  # async @fetch_data()
+  fetch_data: =>
     res = await fetch(@url)
     timeseries = await res.json()
     # most recent is last in list
@@ -214,55 +215,83 @@ class Covid_Data
         obj = timeseries[country][last]
         population = Number.parseInt(population)
         cases = Number.parseInt(obj.confirmed)
-        cases_per_1000 = per_million(cases,population)
+        cases_per_million = per_million(cases,population)
         deaths = Number.parseInt(obj.deaths)
-        deaths_per_1000 = per_million(deaths,population)
+        deaths_per_million = per_million(deaths,population)
+        deaths_per_cent = (100*deaths/cases).toFixed()
         @data.push {
           country,
           population,
           cases,
-          cases_per_1000,
+          cases_per_million,
           deaths,
-          deaths_per_1000
+          deaths_per_million,
+          deaths_per_cent
           }
-    @sort_data('cases', 'ascending')
     return @data
 
   sort_data: (column, direction = 'ascending') =>
-    @data.sort (a,b) ->
-      if direction == 'ascending'
-        return a[column] < b[column]
-      if direction == 'descending'
-        return a[column] > b[column]
-  
-  create_table_elt: =>
+    data = await @data
+    console.log("column #{column}: #{typeof(data[0][column])}")
+    data.sort (a,b) ->
+      if a[column] < b[column]
+        res = 1
+      else if a[column] > b[column]
+        res = -1
+      else
+        res = 0
+      return direction == 'descending' && res || -res
+    @update_table(data)
+    return data
+
+
+  # creates and installs new table element
+  update_table: (data) =>
+    # create element from current data
+    elt = @create_table_elt(data)
+    @elt.replaceWith(elt)
+    @elt = elt
+
+  # TODO:
+  # 0. separate into Covid_Data and Covid_Table_View classes
+  #    Data class maintains the sorted data Array.
+  #    View class maintains the table element and does the following:
+  # 1. separates creation of table head from table rows
+  # 2. links table head clicks to sort functions.
+  # 3. on update, just replaces table rows, leaves head intact
+
+  # create element from current data
+  create_table_elt: (data) =>
     elt = document.createElement('table')
     elt.setAttribute('id', 'cv-data-table')
     elt.setAttribute('class', 'sort')
     rows = ""
     row_num = 1
-    for obj in @data
+    # @data is initialized asynchronously by @fetch_data()
+    for obj in data
       rows += """
         <tr>
           <td class="cv-data-rank"> #{row_num++} </td>
           <td class="cv-data-country"> #{obj.country} </td>
           <td class="cv-data-number"> #{obj.population} </td>
           <td class="cv-data-number"> #{obj.cases} </td>
-          <td class="cv-data-number"> #{obj.cases_per_1000} </td>
+          <td class="cv-data-number"> #{obj.cases_per_million} </td>
           <td class="cv-data-number"> #{obj.deaths} </td>
-          <td class="cv-data-number"> #{obj.deaths_per_1000} </td>
+          <td class="cv-data-number"> #{obj.deaths_per_million} </td>
+          <td class="cv-data-number"> #{obj.deaths_per_cent}% </td>
         </tr>
       """
     elt.innerHTML = """
         <thead>
           <tr>
-            <th data-sort-method='none' class='no-sort cv-data-rank'>Rank</th>
+            <th class='cv-data-rank'>#</th>
             <th class="cv-data-country">Country</th>
             <th class="cv-data-number">Population</th>
             <th class="cv-data-number">Cases</th>
-            <th class="cv-data-number">per Million</th>
+            <th class="cv-data-number">Cases / Million</th>
             <th class="cv-data-number">Deaths</th>
-            <th class="cv-data-number">per Million</th>
+            <th class="cv-data-number">Deaths / Million</th>
+            <th class="cv-data-number">Deaths %</th>
           </tr>
         </thead>
         <tbody>
@@ -271,13 +300,12 @@ class Covid_Data
     """
     return elt
 
+  # call after document loaded
   install: =>
     @parent_elt = document.getElementById(@id)
-    data = await @update()
-    @elt = await @create_table_elt()
-    #new Tablesort(@elt)
+    data = await @fetch_data()
+    @elt = await @create_table_elt(data)
     @parent_elt.appendChild(@elt)
-
 
 
 if window? 
