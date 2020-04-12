@@ -21,6 +21,5 @@
   "dependencies": {
     "coffeescript": "^2.5.1",
     "node-fetch": "^2.6.0",
-    "tablesort": "^5.2.0"
   }
 }
