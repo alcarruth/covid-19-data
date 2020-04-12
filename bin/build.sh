@@ -12,6 +12,4 @@ cp src/index.html build/
 cp src/css/*.css build/css/
 cp src/js/* build/js/
 
-cp node_modules/tablesort/dist/tablesort.min.js build/js/
-cp node_modules/tablesort/dist/sorts/*.js build/js/
 

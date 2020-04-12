@@ -1,5 +1,7 @@
 *.pyc
 *~
+build/
+node_modules/
 
 # Compiled source #
 ###################
