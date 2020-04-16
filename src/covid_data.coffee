@@ -14,6 +14,15 @@ per_million = (x,y) ->
   if y != 0
     return Number((1000000 * x / y).toFixed())
 
+normal_sort = (spec) ->
+  {column, direction} = spec
+  (a,b) ->
+    [a,b] = [b,a] if direction == 'ascending'
+    return 1 if a[column] < b[column]
+    return -1 if a[column] > b[column] 
+    return 0 
+
+        
 populations = {
    "Afghanistan": 38041754,
    "Albania": 2880917,
@@ -285,34 +294,12 @@ class Covid_Data
           }
     return @data
 
-  sort_data: (column, direction = 'ascending') =>
+  sort_data: (spec) =>
+    console.log("sort_data(#{spec})")
     data = await @data
-    console.log("sorting on #{column}")
-    data.sort (a,b) ->
-      if a[column] < b[column]
-        res = 1
-      else if a[column] > b[column]
-        res = -1
-      else
-        res = 0
-      return direction == 'descending' && res || -res
-    @current_sort =
-      column: column
-      direction: direction
-    @highlight_column = column
+    data.sort(normal_sort(spec))
+    @current_sort = spec
     @update_views()
-
-
-  # create element from current data
-
-  # TODO:
-  # 0. separate into Covid_Data and Covid_Table_View classes
-  #    Data class maintains the sorted data Array.
-  #    View class maintains the table element and does the following:
-  # 1. separates creation of table head from table rows
-  # 2. links table head clicks to sort functions.
-  # 3. on update, just replaces table rows, leaves head intact
-
 
 
 class Table_View
@@ -335,6 +322,14 @@ class Table_View
     tbody = new Table_Body(@table)
     @tbody.elt.replaceWith(tbody.elt)
     @tbody = tbody
+    @highlight(@table.current_sort.column)
+
+  highlight: (column=null) =>
+    if column != null
+      for th_elt in  @elt.getElementsByClassName('column-header')
+        th_elt.classList.remove('highlight')
+      for td_elt in @elt.getElementsByClassName(column.replace(/_/g,'-'))
+        td_elt.classList.add('highlight')
 
 
 class Table_Header
@@ -348,49 +343,49 @@ class Table_Header
 
     @add_column('rank', {
        innerHTML: '#'
-       classes: ['cv-data-rank']
+       classes: ['cv-data-rank', 'rank', 'highlight']
        })
 
     @add_column('country', {
       sort_order: 'ascending'
       innerHTML: 'Country'
-      classes: ['cv-data-country']
+      classes: ['cv-data-country', 'country', 'column-header']
       })
 
     @add_column('population', {
       sort_order: 'descending'
       innerHTML: 'Population'
-      classes: ['cv-data-number']
+      classes: ['cv-data-number', 'column-header']
       })
       
     @add_column('cases', {
       sort_order: 'descending'
       innerHTML: 'Cases'
-      classes: ['cv-data-number']
+      classes: ['cv-data-number', 'column-header']
       })
       
     @add_column('cases_per_million', {
       innerHTML: 'Cases / Million',
       sort_order: 'descending'
-      classes: ['cv-data-number']
+      classes: ['cv-data-number', 'column-header']
       })
 
     @add_column('deaths', {
       sort_order: 'descending'
       innerHTML: 'Deaths'
-      classes: ['cv-data-number']
+      classes: ['cv-data-number', 'column-header']
       })
 
     @add_column('deaths_per_million', {
       innerHTML: 'Deaths / Million',
       sort_order: 'descending'
-      classes: ['cv-data-number']
+      classes: ['cv-data-number', 'column-header']
       })
 
     @add_column('deaths_per_cent', {
       innerHTML: 'Deaths %',
       sort_order: 'descending'
-      classes: ['cv-data-number']
+      classes: ['cv-data-number', 'column-header']
       })
 
   handle_click: (column) =>
@@ -401,7 +396,7 @@ class Table_Header
         direction = 'ascending'
     else
       direction = @defaults[column].sort_order
-    @table.sort_data(column, direction)
+    @table.sort_data({column, direction})
     
   add_column: (column, spec={}) =>
     if not column?
@@ -410,13 +405,13 @@ class Table_Header
     innerHTML = spec.innerHTML || column.replace(/_/g, ' ')
     sort_order = spec.sort_order || 'ascending'
     @defaults[column] = { sort_order: sort_order }
-    classes = spec.classes || ['column-heading']
+    classes = spec.classes || []
+    classes.push(id)
     th_elt = document.createElement('th')
     th_elt.setAttribute('id', id)
     th_elt.setAttribute('class', classes.join(' '))
     th_elt.innerHTML = innerHTML
     if sort_order != null
-      console.log th_elt
       th_elt.onclick = =>
         @handle_click(column)
       th_elt.onmouseover = =>
@@ -436,7 +431,7 @@ class Table_Body
     for obj in @table.data
       rows += """
         <tr>
-          <td class="cv-data-rank"> #{row_num++} </td>
+          <td class="cv-data-rank rank highlight"> #{row_num++} </td>
           <td class="cv-data-country country"> #{obj.country} </td>
           <td class="cv-data-number population"> #{obj.population} </td>
           <td class="cv-data-number cases"> #{obj.cases} </td>
@@ -447,14 +442,6 @@ class Table_Body
         </tr>
       """
     @elt.innerHTML = rows
-    
-    if @table.highlight
-      @highlight(@table.highlight)
-
-  hightlight: (column) =>
-    for td_elt in @elt.getElementsByClassName(column)
-      td_elt.classList.add('highlight')
-    @highlight_column = column
 
 
 if window? 
