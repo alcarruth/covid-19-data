@@ -5,6 +5,7 @@ if window?
   fetch = window.fetch
 else
   fetch = require('node-fetch')
+  csvtojson = require('csvtojson')
 
 covid_data_url = "https://pomber.github.io/covid19/timeseries.json"
 population_url = "https://data.un.org/Data.aspx?d=PopDiv&f=variableID%3a12%3btimeID%3a84%3bvarID%3a2&c=2,7&v=1"
@@ -197,12 +198,57 @@ populations = {
 
 class Covid_Data
 
-  constructor: (@id, url) ->
-    @url = url || covid_data_url
+  constructor: (@id) ->
     @populations = populations
+    @url = covid_data_url
+    @views = []
+    @current_sort =
+      column: null
+      direction: null
+
+  # call after document loaded
+  init: =>
+    @data = await @fetch_latest()
+    view = new Table_View(this, "#{@id}_div", "#{@id}_view_1")
+    @add_view(view)
+    @update_views()
+
+  update_views: =>
+    for view in @views
+      view.update(await @data)
+
+  add_view: (view) =>
+    @views.push(view)
+    
+###
+
+  fetch_data: (date) =>
+    month = "0#{date.getMonth()+1}"[-2..]
+    day = "0#{date.getDate()}"[-2..]
+    year = date.getFullYear()
+    csv_file = "#{month}-#{day}-#{year}.csv"
+    path =  "/csse_covid_19_data/csse_covid_19_daily_reports"
+    repo_root = "raw.githubusercontent.com/CSSEGISandData/COVID-19/master"
+    url = "https://#{repo_root}/#{path}/#{csv_file}"
+    console.log(url)
+    return fetch(url)
+    
+
+  fetch_latest: =>
+    date = new Date()
+    res = await @fetch_data(date)
+    while res.status != 200
+      console.log(res.status)
+      date.setDate(date.getDate()-1)
+      res = await @fetch_data(date)
+    csv = await res.text()
+    @data = await csvtojson().fromString(csv)
+    return @data
+
+###
 
   # async @fetch_data()
-  fetch_data: =>
+  fetch_latest: =>
     res = await fetch(@url)
     timeseries = await res.json()
     # most recent is last in list
@@ -216,7 +262,7 @@ class Covid_Data
     pop_src_elt = document.getElementById('un-data-src')
     link = "<a src=\"#{population_url}\"> https://data.un.org/ </a>"
     pop_src_elt.innerHTML = "Population data source: #{link}"
-    
+
     @data = []
     for country,_ of timeseries
       population = @populations[country]
@@ -241,7 +287,7 @@ class Covid_Data
 
   sort_data: (column, direction = 'ascending') =>
     data = await @data
-    console.log("column #{column}: #{typeof(data[0][column])}")
+    console.log("sorting on #{column}")
     data.sort (a,b) ->
       if a[column] < b[column]
         res = 1
@@ -250,16 +296,14 @@ class Covid_Data
       else
         res = 0
       return direction == 'descending' && res || -res
-    @update_table(data)
-    return data
+    @current_sort =
+      column: column
+      direction: direction
+    @highlight_column = column
+    @update_views()
 
 
-  # creates and installs new table element
-  update_table: (data) =>
-    # create element from current data
-    elt = @create_table_elt(data)
-    @elt.replaceWith(elt)
-    @elt = elt
+  # create element from current data
 
   # TODO:
   # 0. separate into Covid_Data and Covid_Table_View classes
@@ -269,52 +313,148 @@ class Covid_Data
   # 2. links table head clicks to sort functions.
   # 3. on update, just replaces table rows, leaves head intact
 
-  # create element from current data
-  create_table_elt: (data) =>
-    elt = document.createElement('table')
-    elt.setAttribute('id', 'cv-data-table')
-    elt.setAttribute('class', 'sort')
+
+
+class Table_View
+
+  constructor: (@table, @parent_id, @id) ->
+    @elt = document.createElement('table')
+    @elt.setAttribute('id', @id)
+    @elt.setAttribute('class', 'cv-data-table-view')
+    @parent_elt = document.getElementById(@parent_id)
+    @parent_elt.appendChild(@elt)
+    
+    @thead = new Table_Header(@table)
+    @tbody = new Table_Body(@table)
+    @elt.appendChild(@thead.elt)
+    @elt.appendChild(@tbody.elt)
+
+  # creates and installs new table element
+  update: =>
+    # create new <tbody> element from current data
+    tbody = new Table_Body(@table)
+    @tbody.elt.replaceWith(tbody.elt)
+    @tbody = tbody
+
+
+class Table_Header
+
+  constructor: (@table) ->
+    @elt = document.createElement('thead')
+    @elt.setAttribute('id', 'table-header')
+    @tr_elt = document.createElement('tr')
+    @elt.appendChild(@tr_elt)
+    @defaults = {}
+
+    @add_column('rank', {
+       innerHTML: '#'
+       classes: ['cv-data-rank']
+       })
+
+    @add_column('country', {
+      sort_order: 'ascending'
+      innerHTML: 'Country'
+      classes: ['cv-data-country']
+      })
+
+    @add_column('population', {
+      sort_order: 'descending'
+      innerHTML: 'Population'
+      classes: ['cv-data-number']
+      })
+      
+    @add_column('cases', {
+      sort_order: 'descending'
+      innerHTML: 'Cases'
+      classes: ['cv-data-number']
+      })
+      
+    @add_column('cases_per_million', {
+      innerHTML: 'Cases / Million',
+      sort_order: 'descending'
+      classes: ['cv-data-number']
+      })
+
+    @add_column('deaths', {
+      sort_order: 'descending'
+      innerHTML: 'Deaths'
+      classes: ['cv-data-number']
+      })
+
+    @add_column('deaths_per_million', {
+      innerHTML: 'Deaths / Million',
+      sort_order: 'descending'
+      classes: ['cv-data-number']
+      })
+
+    @add_column('deaths_per_cent', {
+      innerHTML: 'Deaths %',
+      sort_order: 'descending'
+      classes: ['cv-data-number']
+      })
+
+  handle_click: (column) =>
+    if @table.current_sort.column == column
+      if @table.current_sort.direction == 'ascending'
+        direction = 'descending'
+      else
+        direction = 'ascending'
+    else
+      direction = @defaults[column].sort_order
+    @table.sort_data(column, direction)
+    
+  add_column: (column, spec={}) =>
+    if not column?
+      return new Error()
+    id = spec.id || column.replace(/_/g,'-')
+    innerHTML = spec.innerHTML || column.replace(/_/g, ' ')
+    sort_order = spec.sort_order || 'ascending'
+    @defaults[column] = { sort_order: sort_order }
+    classes = spec.classes || ['column-heading']
+    th_elt = document.createElement('th')
+    th_elt.setAttribute('id', id)
+    th_elt.setAttribute('class', classes.join(' '))
+    th_elt.innerHTML = innerHTML
+    if sort_order != null
+      console.log th_elt
+      th_elt.onclick = =>
+        @handle_click(column)
+      th_elt.onmouseover = =>
+        th_elt.classList.add('mouseover')
+      th_elt.onmouseout = =>
+        th_elt.classList.remove('mouseover')
+    @tr_elt.appendChild(th_elt)
+
+
+class Table_Body
+
+  constructor: (@table) ->
+    @elt = document.createElement('tbody')
     rows = ""
     row_num = 1
     # @data is initialized asynchronously by @fetch_data()
-    for obj in data
+    for obj in @table.data
       rows += """
         <tr>
           <td class="cv-data-rank"> #{row_num++} </td>
-          <td class="cv-data-country"> #{obj.country} </td>
-          <td class="cv-data-number"> #{obj.population} </td>
-          <td class="cv-data-number"> #{obj.cases} </td>
-          <td class="cv-data-number"> #{obj.cases_per_million} </td>
-          <td class="cv-data-number"> #{obj.deaths} </td>
-          <td class="cv-data-number"> #{obj.deaths_per_million} </td>
-          <td class="cv-data-number"> #{obj.deaths_per_cent}% </td>
+          <td class="cv-data-country country"> #{obj.country} </td>
+          <td class="cv-data-number population"> #{obj.population} </td>
+          <td class="cv-data-number cases"> #{obj.cases} </td>
+          <td class="cv-data-number cases-per-million"> #{obj.cases_per_million} </td>
+          <td class="cv-data-number deaths"> #{obj.deaths} </td>
+          <td class="cv-data-number deaths-per-million"> #{obj.deaths_per_million} </td>
+          <td class="cv-data-number deaths-per-cent"> #{obj.deaths_per_cent}% </td>
         </tr>
       """
-    elt.innerHTML = """
-        <thead>
-          <tr>
-            <th class='cv-data-rank'>#</th>
-            <th class="cv-data-country">Country</th>
-            <th class="cv-data-number">Population</th>
-            <th class="cv-data-number">Cases</th>
-            <th class="cv-data-number">Cases / Million</th>
-            <th class="cv-data-number">Deaths</th>
-            <th class="cv-data-number">Deaths / Million</th>
-            <th class="cv-data-number">Deaths %</th>
-          </tr>
-        </thead>
-        <tbody>
-          #{rows}
-        </tbody>
-    """
-    return elt
+    @elt.innerHTML = rows
+    
+    if @table.highlight
+      @highlight(@table.highlight)
 
-  # call after document loaded
-  install: =>
-    @parent_elt = document.getElementById(@id)
-    data = await @fetch_data()
-    @elt = await @create_table_elt(data)
-    @parent_elt.appendChild(@elt)
+  hightlight: (column) =>
+    for td_elt in @elt.getElementsByClassName(column)
+      td_elt.classList.add('highlight')
+    @highlight_column = column
 
 
 if window? 

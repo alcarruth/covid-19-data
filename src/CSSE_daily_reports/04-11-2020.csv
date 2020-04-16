@@ -2701,7 +2701,7 @@ FIPS,Admin2,Province_State,Country_Region,Last_Update,Lat,Long_,Confirmed,Deaths
 ,,Australian Capital Territory,Australia,2020-04-11 22:52:46,-35.4735,149.0124,103,2,59,42,"Australian Capital Territory, Australia"
 ,,Beijing,China,2020-04-11 00:47:18,40.1824,116.4142,589,8,474,107,"Beijing, China"
 ,,Bermuda,United Kingdom,2020-04-11 22:45:13,32.3078,-64.7505,48,4,25,19,"Bermuda, United Kingdom"
-,,"Bonaire Sint Eustatius and Saba",Netherlands,2020-04-11 22:45:13,12.1784,-68.2385,2,0,0,2,"Bonaire, Sint Eustatius and Saba, Netherlands"
+,,"Bonaire, Sint Eustatius and Saba",Netherlands,2020-04-11 22:45:13,12.1784,-68.2385,2,0,0,2,"Bonaire, Sint Eustatius and Saba, Netherlands"
 ,,British Columbia,Canada,2020-04-11 22:52:28,53.7267,-127.6476,1445,58,0,0,"British Columbia, Canada"
 ,,British Virgin Islands,United Kingdom,2020-04-11 22:45:13,18.4207,-64.64,3,0,2,1,"British Virgin Islands, United Kingdom"
 ,,Cayman Islands,United Kingdom,2020-04-11 22:45:13,19.3133,-81.2546,45,1,6,38,"Cayman Islands, United Kingdom"

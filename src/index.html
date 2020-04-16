@@ -7,9 +7,13 @@
   <link href='css/reset.css' rel='stylesheet'>
   <link href='css/style.css' rel='stylesheet'>
   <script src='js/covid_data.js'></script>
+<!--
+  <script src='js/csvtojson.min.js'></script>
+  <script src='js/browser.js'></script>
+-->
 </head>
 <body>
-  <div id="corona-virus-data">
+  <div id="corona-virus-data_div">
     <h1> Corona Virus Table </h1>
     <p>
       <span id="covid-data-src"> covid data source </span> <br />
@@ -18,6 +22,6 @@
   </div>
 </body>
 <script>
-  covid_data.install();
+  covid_data.init();
 </script>
 </html>

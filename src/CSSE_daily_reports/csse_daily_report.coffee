@@ -9,24 +9,29 @@ fs = require('fs')
 csv_parse = require('csv-parse/lib/sync')
 csv_to_json = require('csvtojson')
 
-init_world = (csv_file) ->
-  data = []
-  csv_lines = fs.readFileSync(csv_file, 'utf8').split('\n')
-  column_names = csv_lines[0].split(',')
-  for line in csv_lines[1...]
-    values = line.split(',')
-    obj = {}
-    for col in column_names
-      obj[col] = values.shift()
-    data.push(obj)
-  return new Covid_19_World(data, 'world')
+
+if window?
+  fetch = window.fetch
+else
+  fetch = require('node-fetch')
 
 
 class Covid_19_CSV_Data
 
-  constructor: (@csv_file) ->
-    @csv = fs.readFileSync(csv_file, 'utf8')
+  constructor: ->
+    #@csv = fs.readFileSync(csv_file, 'utf8')
 
+  fetch_latest: =>
+    date = new Date()
+    month = "0#{date.getMonth()+1}"[-2..]
+    day = "0#{date.getDate()}"[-2..]
+    year = date.getFullYear()
+    csv_file = "#{month}-#{day}-#{year}.csv"
+    path =  "/csse_covid_19_data/csse_covid_19_daily_reports/#{csv_file}"
+    repo_root = "raw.githubusercontent.com/CSSEGISandData/COVID-19/master"
+    url = "https://#{repo_root}/#{path}/#{csv_file}"
+    @csv = await fetch(url)
+    
   csv_parse: =>
     @records = csv_parse @csv,
       columns: true

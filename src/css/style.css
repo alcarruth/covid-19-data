@@ -1,31 +1,64 @@
 
 
-div#corona-virus-data {
-    width: 100%;
+div#corona-virus-data_div {
+    width: 90%;
     max-width: 900px;
     margin: auto;
 }
 
 h1 {
     font-size: 25px;
-    width: 90%;
+    width: 100%;
     margin: auto;
     padding-top: 20px;
     padding-bottom: 20px;
 }
 
 p {
-    width: 90%;
+    width: 100%;
     margin: auto;
 }
 
-table#cv-data-table {
-    width: 90%;
+table.cv-data-table-view {
+    width: 100%;
     margin: auto;
+}
+
+th {
+    font-family: sans-serif;
+    font-size: small;
+    font-weight: bold;
+}
+
+th.highlight {
+    color: #33d;
+    background: #ddd;
+    font-weight: bold;
+}
+
+th.mouseover {
+    background: #aaf;
+    cursor: ns-resize;
+}
+
+th.cv-data-rank {
+    text-align:right;
+    width: 2%;
+}
+
+th.cv-data-country {
+    text-align:left;
+    width: 18%;
+}
+
+th.cv-data-number {
+    text-align:right;
+    width: 10%;
 }
 
 td.highlight {
     color: #33d;
+    background: #ddd;
     font-weight: bold;
 }
 
@@ -44,18 +77,4 @@ td.cv-data-number {
     width: 10%;
 }
 
-th.cv-data-rank {
-    text-align:right;
-    width: 2%;
-}
-
-th.cv-data-country {
-    text-align:left;
-    width: 18%;
-}
-
-th.cv-data-number {
-    text-align:right;
-    width: 10%;
-}
 

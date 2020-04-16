@@ -12,4 +12,5 @@ cp src/index.html build/
 cp src/css/*.css build/css/
 cp src/js/* build/js/
 
-
+cp node_modules/csvtojson/browser/csvtojson.min.js build/js/
+cp node_modules/csvtojson/browser/browser.js build/js/
