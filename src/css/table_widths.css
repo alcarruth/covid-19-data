@@ -1,0 +1,35 @@
+
+table .rank {
+    width: 2%;
+}
+
+table .country {
+    width: 25%;
+}
+
+table .population {
+    width: 14%;
+}
+
+table .cases {
+    width: 8%;
+}
+
+table .cases-per-million {
+    width: 8%;
+}
+
+table .deaths {
+    width: 8%;
+}
+
+.deaths-per-million {
+    width: 8%;
+}
+
+.deaths-per-cent {
+    width: 8%;
+}
+
+
+

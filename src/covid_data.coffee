@@ -307,7 +307,7 @@ class Table_View
   constructor: (@table, @parent_id, @id) ->
     @elt = document.createElement('table')
     @elt.setAttribute('id', @id)
-    @elt.setAttribute('class', 'cv-data-table-view')
+    @elt.setAttribute('class', 'table-view')
     @parent_elt = document.getElementById(@parent_id)
     @parent_elt.appendChild(@elt)
     
@@ -343,49 +343,49 @@ class Table_Header
 
     @add_column('rank', {
        innerHTML: '#'
-       classes: ['cv-data-rank', 'rank', 'highlight']
+       classes: ['rank', 'highlight']
        })
 
     @add_column('country', {
       sort_order: 'ascending'
       innerHTML: 'Country'
-      classes: ['cv-data-country', 'country', 'column-header']
+      classes: ['country', 'column-header']
       })
 
     @add_column('population', {
       sort_order: 'descending'
       innerHTML: 'Population'
-      classes: ['cv-data-number', 'column-header']
+      classes: ['population', 'column-header']
       })
       
     @add_column('cases', {
       sort_order: 'descending'
       innerHTML: 'Cases'
-      classes: ['cv-data-number', 'column-header']
+      classes: ['cases', 'column-header']
       })
       
     @add_column('cases_per_million', {
       innerHTML: 'Cases / Million',
       sort_order: 'descending'
-      classes: ['cv-data-number', 'column-header']
+      classes: ['cases-per-million', 'column-header']
       })
 
     @add_column('deaths', {
       sort_order: 'descending'
       innerHTML: 'Deaths'
-      classes: ['cv-data-number', 'column-header']
+      classes: ['deaths', 'column-header']
       })
 
     @add_column('deaths_per_million', {
       innerHTML: 'Deaths / Million',
       sort_order: 'descending'
-      classes: ['cv-data-number', 'column-header']
+      classes: ['deaths-per-million', 'column-header']
       })
 
     @add_column('deaths_per_cent', {
       innerHTML: 'Deaths %',
       sort_order: 'descending'
-      classes: ['cv-data-number', 'column-header']
+      classes: ['deaths-per-cent', 'column-header']
       })
 
   handle_click: (column) =>
@@ -431,14 +431,14 @@ class Table_Body
     for obj in @table.data
       rows += """
         <tr>
-          <td class="cv-data-rank rank highlight"> #{row_num++} </td>
-          <td class="cv-data-country country"> #{obj.country} </td>
-          <td class="cv-data-number population"> #{obj.population} </td>
-          <td class="cv-data-number cases"> #{obj.cases} </td>
-          <td class="cv-data-number cases-per-million"> #{obj.cases_per_million} </td>
-          <td class="cv-data-number deaths"> #{obj.deaths} </td>
-          <td class="cv-data-number deaths-per-million"> #{obj.deaths_per_million} </td>
-          <td class="cv-data-number deaths-per-cent"> #{obj.deaths_per_cent}% </td>
+          <td class="rank highlight"> #{row_num++} </td>
+          <td class="country"> #{obj.country} </td>
+          <td class="population"> #{obj.population} </td>
+          <td class="cases"> #{obj.cases} </td>
+          <td class="cases-per-million"> #{obj.cases_per_million} </td>
+          <td class="deaths"> #{obj.deaths} </td>
+          <td class="deaths-per-million"> #{obj.deaths_per_million} </td>
+          <td class="deaths-per-cent"> #{obj.deaths_per_cent}% </td>
         </tr>
       """
     @elt.innerHTML = rows
