@@ -1,56 +1,56 @@
 
 
 div#corona-virus-data_div {
-    width: 90%;
-    max-width: 900px;
-    margin: auto;
+  width: 90%;
+  max-width: 900px;
+  margin: auto;
 }
 
 h1 {
-    font-size: 25px;
-    width: 100%;
-    margin: auto;
-    padding-top: 20px;
-    padding-bottom: 20px;
+  font-size: 25px;
+  width: 100%;
+  margin: auto;
+  padding-top: 20px;
+  padding-bottom: 20px;
 }
 
 p {
-    width: 100%;
-    margin: auto;
+  width: 100%;
+  margin: auto;
 }
 
 table.table-view {
-    width: 100%;
-    margin: auto;
+  width: 100%;
+  margin: auto;
 }
 
 table th {
-    background: #eee;
-    text-align: right;
-    font-size: smaller;
-    font-weight: bold;
-}
-
-/* th.mouseover { */
-th:hover {
-    background: #ddf;
-    cursor: pointer;
+  background: #eee;
+  text-align: right;
+  font-size: smaller;
+  font-weight: bold;
 }
 
 th.highlight {
-    background: #ddd;
-    font-weight: bold;
+  background: #ddd;
+  font-weight: bold;
+}
+
+/* th.mouseover { */
+th.mouseover {
+  background: #ddf;
+  cursor: pointer;
 }
 
 td.highlight {
-    background: #f8f8f8;
-    font-weight: normal;
+  background: #f8f8f8;
+  font-weight: normal;
 }
 
 table th, table td {
-    text-align: right;
+  text-align: right;
 }
 
 table .country {
-    text-align: left;
+  text-align: left;
 }
