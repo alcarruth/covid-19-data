@@ -1,0 +1,129 @@
+#!/usr/bin/env coffee
+#
+
+if window?
+  fetch = window.fetch
+  csv = window.csv
+else
+  fetch = require('node-fetch')
+  csv = require('csvtojson')
+
+class CSSE_Covid_19_Data_Source
+
+  constructor: ->
+    @path =  "/csse_covid_19_data/csse_covid_19_daily_reports"
+    @repo_root = "raw.githubusercontent.com/CSSEGISandData/COVID-19/master"
+    @date = new Date()
+    @url = @date_to_url(@date)
+  
+  date_to_url: (date) =>
+    month = "0#{date.getMonth()+1}"[-2..]
+    day = "0#{date.getDate()}"[-2..]
+    year = date.getFullYear()
+    csv_file = "#{month}-#{day}-#{year}.csv"
+    url = "https://#{@repo_root}/#{@path}/#{csv_file}"
+    return url
+
+  # async
+  fetch_csse_data: =>
+    res = await fetch(@url)
+    while res.status != 200
+      @date.setDate(@date.getDate()-1)
+      @url = @date_to_url(@date)
+      res = await fetch(@url)
+    csv_str = await res.text()
+    csse_data = window.csv().fromString(csv_str)
+    return csse_data
+
+  fetch_data: =>
+    csse_data = await @fetch_csse_data()
+    return new CSSE_Data_World(csse_data)
+  
+
+class CSSE_Data_World
+
+  constructor: (@data) ->
+    @countries = {}
+    @cases = 0
+    @deaths = 0
+    @init()
+
+  init: =>
+    hash = {}
+    for x in @data
+      @cases += Number(x.Confirmed)
+      @deaths += Number(x.Deaths)
+      key = x.Country_Region
+      if hash[key]
+        hash[key].push(x)
+      else
+        hash[key] = [x]
+    for key, val of hash
+      @countries[key] = new CSSE_Data_Country_Region(this, val)
+
+      
+class CSSE_Data_Country_Region
+
+  constructor: (@parent, @data) ->
+    @states = {}
+    @cases = 0
+    @deaths = 0
+    @init()
+
+  init: =>
+    hash = {}
+    for x in @data
+      @cases += Number(x.Confirmed)
+      @deaths += Number(x.Deaths)
+      key = x['Province_State']
+      if hash[key]
+        hash[key].push(x)
+      else
+        hash[key] = [x]
+    for key, val of hash
+      @states[key] = new CSSE_Data_Province_State(this, val)
+
+
+class CSSE_Data_Province_State
+  
+  constructor: (@parent, @data) ->
+    @counties = {}
+    @cases = 0
+    @deaths = 0
+    @init()
+    
+  init: =>
+    hash = {}
+    for x in @data
+      @cases += Number(x.Confirmed)
+      @deaths += Number(x.Deaths)
+      key = x['Admin2']
+      if hash[key]
+        hash[key].push(x)
+      else
+        hash[key] = [x]
+    for key, val of hash
+      county = new CSSE_Data_Admin2(this, val)
+      @counties[key] = county
+
+
+class CSSE_Data_Admin2
+
+  constructor: (@parent, @data) ->
+    @cases = 0
+    @deaths = 0
+    @init()
+    
+  init: =>
+    for d in @data
+      @cases += Number(d.Confirmed)
+      @deaths += Number(d.Deaths)
+    
+
+   
+if window?
+  window.CSSE_Covid_19_Data_Source = CSSE_Covid_19_Data_Source
+
+else
+  exports.CSSE_Covid_19_Data_Source = CSSE_Covid_19_Data_Source
+

@@ -1,6 +1,9 @@
 #!/usr/bin/env coffee
 #
 
+
+population_url = "https://data.un.org/Data.aspx?d=PopDiv&f=variableID%3a12%3btimeID%3a84%3bvarID%3a2&c=2,7&v=1"
+
 populations = {
    "Afghanistan": 38041754,
    "Albania": 2880917,
@@ -182,4 +185,20 @@ populations = {
    "Sao Tome and Principe": 215056
 }
 
-module.exports = populations
+class Population_Data_Source
+
+  constructor: ->
+    @url = population_url
+    @populations = populations
+
+  get: (country) =>
+    @populations[country]
+
+    
+if window?
+  window.Population_Data_Source = Population_Data_Source
+
+else
+  exports.Population_Data_Source = Population_Data_Source
+   
+ 

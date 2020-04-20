@@ -8,11 +8,10 @@
   <link href='css/table_style.css' rel='stylesheet'>
   <link href='css/table_widths.css' rel='stylesheet'>
   <link href='css/style.css' rel='stylesheet'>
-  <script src='js/covid_data.js'></script>
-<!--
   <script src='js/csvtojson.min.js'></script>
-  <script src='js/browser.js'></script>
--->
+  <script src='js/covid_data.js'></script>
+  <script src='js/csse_covid_19_data_source.js'></script>
+  <script src='js/population_data_source.js'></script>
 </head>
 <body>
   <div id="corona-virus-data_div">
@@ -24,6 +23,7 @@
   </div>
 </body>
 <script>
-  covid_data.init();
+  covid_data = new Covid_Data('corona-virus-data')
+  window.covid_data = covid_data
 </script>
 </html>
