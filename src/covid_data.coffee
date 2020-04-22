@@ -37,6 +37,7 @@ class Covid_Data
     @init_data()
     .then (csse_data) =>
       @world = csse_data
+      @date = @covid_data_source.date
       @data = @merge_data()
       @add_view(@data)
 
@@ -87,7 +88,23 @@ class Covid_Data
     @current_sort = spec
     @update_views()
 
+class Style_Manager
 
+  constructor: ->
+    @current_style = 'light'
+    @styles =
+      light: document.getElementById('light-style')
+      dark: document.getElementById('dark-style')
+
+  set_style: (name) =>
+    style = @styles[name]
+    document.head.appendChild(style)
+    @current_style = name
+
+  toggle_style: =>
+    name = { light: 'dark', dark: 'light' }[@current_style]
+    @set_style(name)
+    
 class Table_View
 
   constructor: (@table, @id, @parent_elt_id) ->
@@ -96,14 +113,20 @@ class Table_View
     @elt = document.createElement('table')
     @elt.setAttribute('id', @elt_id)
     @elt.setAttribute('class', 'table-view')
+    @date_elt = document.createElement('p')
+    @date_elt.innerText = "#{@table.date}"
     @parent_elt = document.getElementById(@parent_elt_id)
+    @parent_elt.appendChild(@date_elt)
     @parent_elt.appendChild(@elt)
-    
+    @h1_elt = document.getElementById('table-h1')
+    @h1_elt.innerHTML = "Corona Virus Data by Country"
+    @style_manager = new Style_Manager()
     @thead = new Table_Header(@table)
     @tbody = new Table_Body(@table)
     @elt.appendChild(@thead.elt)
     @elt.appendChild(@tbody.elt)
 
+###
     @covid_src_elt = document.getElementById('covid-data-src')
     covid_data_url = @table.covid_data_source.url
     link = "<a src=\"#{covid_data_url}\"> #{covid_data_url} </a>"
@@ -113,6 +136,7 @@ class Table_View
     population_url = @table.population_data_source.url 
     link = "<a src=\"#{population_url}\"> https://data.un.org/ </a>"
     @pop_src_elt.innerHTML = "Population data source: #{link}"
+###
 
   # creates and installs new table element
   update: (data) =>

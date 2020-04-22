@@ -10,7 +10,9 @@ mkdir -p build/js build/css/
 coffee -cM -o build/js/ src/covid_data.coffee
 coffee -cM -o build/js/ src/csse_covid_19_data_source.coffee
 coffee -cM -o build/js/ src/population_data_source.coffee
-cp src/index.html build/
+
+coffee bin/build.coffee > build/index.html
+#cp src/index.html build/
 cp src/css/*.css build/css/
 cp src/js/* build/js/
 

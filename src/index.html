@@ -5,9 +5,15 @@
   <meta charset='utf-8' />
   <meta name='viewport' content='initial-scale=1,user-scalable=yes' />
   <link href='css/reset.css' rel='stylesheet'>
-  <link href='css/table_style.css' rel='stylesheet'>
+  <link href='css/table_style_simple.css' rel='stylesheet'>
   <link href='css/table_widths.css' rel='stylesheet'>
   <link href='css/style.css' rel='stylesheet'>
+  <style id='light-style'>
+    {{ light_style }}
+  </style>
+  <style id='dark-style'>
+    {{ dark_style }}
+  </style>
   <script src='js/csvtojson.min.js'></script>
   <script src='js/covid_data.js'></script>
   <script src='js/csse_covid_19_data_source.js'></script>
@@ -15,15 +21,12 @@
 </head>
 <body>
   <div id="corona-virus-data_div">
-    <h1> Corona Virus Table </h1>
-    <p>
-      <span id="covid-data-src"> covid data source </span> <br />
-      <span id="un-data-src"> population data source </span>
-    </p>
+    <h1 id="table-h1"> Corona Virus Table </h1>
   </div>
 </body>
 <script>
   covid_data = new Covid_Data('corona-virus-data')
+  covid_data.init()
   window.covid_data = covid_data
 </script>
 </html>

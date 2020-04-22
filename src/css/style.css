@@ -25,32 +25,30 @@ table.table-view {
 }
 
 table th {
-  background: #eee;
-  text-align: right;
-  font-size: smaller;
-  font-weight: bold;
-}
-
-th.highlight {
-  background: #ddd;
-  font-weight: bold;
-}
-
-/* th.mouseover { */
-th.mouseover {
-  background: #ddf;
-  cursor: pointer;
-}
-
-td.highlight {
-  background: #f8f8f8;
+  font-size: small;
   font-weight: normal;
 }
 
-table th, table td {
+table th.highlight {
+  font-weight: normal;
+}
+
+/* th.mouseover { */
+table th.mouseover {
+  cursor: pointer;
+}
+
+table td {
+  font-size: small;
+  font-weight: bold;
+}
+
+table th,
+table td {
   text-align: right;
 }
 
-table .country {
+table th.country,
+table td.country {
   text-align: left;
 }

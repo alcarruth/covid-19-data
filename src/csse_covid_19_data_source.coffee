@@ -24,13 +24,19 @@ class CSSE_Covid_19_Data_Source
     url = "https://#{@repo_root}/#{@path}/#{csv_file}"
     return url
 
+  fetch_url: (url) =>
+    try
+      return fetch(@url)
+    catch e
+      
   # async
   fetch_csse_data: =>
-    res = await fetch(@url)
+    @url = @date_to_url(@date)
+    res = await @fetch_url(@url)
     while res.status != 200
       @date.setDate(@date.getDate()-1)
       @url = @date_to_url(@date)
-      res = await fetch(@url)
+      res = await @fetch_url(@url)
     csv_str = await res.text()
     csse_data = window.csv().fromString(csv_str)
     return csse_data
