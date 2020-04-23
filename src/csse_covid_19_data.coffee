@@ -16,6 +16,12 @@ class CSSE_Covid_19_Data_Source
     @date = new Date()
     @url = @date_to_url(@date)
   
+  init: =>
+    csse_data = await @fetch_csse_data()
+    @world = new CSSE_Data_World(csse_data)
+    @countries = @world.countries
+    @states = @countries.US.states
+    
   date_to_url: (date) =>
     month = "0#{date.getMonth()+1}"[-2..]
     day = "0#{date.getDate()}"[-2..]
@@ -38,12 +44,9 @@ class CSSE_Covid_19_Data_Source
       @url = @date_to_url(@date)
       res = await @fetch_url(@url)
     csv_str = await res.text()
-    csse_data = window.csv().fromString(csv_str)
+    csse_data = csv().fromString(csv_str)
     return csse_data
 
-  fetch_data: =>
-    csse_data = await @fetch_csse_data()
-    return new CSSE_Data_World(csse_data)
   
 
 class CSSE_Data_World
@@ -128,8 +131,8 @@ class CSSE_Data_Admin2
 
    
 if window?
-  window.CSSE_Covid_19_Data_Source = CSSE_Covid_19_Data_Source
+  window.csse_covid_19_data = new CSSE_Covid_19_Data_Source()
 
 else
-  exports.CSSE_Covid_19_Data_Source = CSSE_Covid_19_Data_Source
+  module.exports = new CSSE_Covid_19_Data_Source()
 

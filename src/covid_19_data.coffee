@@ -7,8 +7,8 @@ if window?
 else
   fetch = require('node-fetch')
   csv = require('csvtojson')
-  { Population_Data_Source } = require('./population_data_source')
-  { CSSE_Covid_19_Data_Source } = require('./csse_covid_19_data_source')
+  population_data = require('./js/populations.json')
+  csse_covid_19_data = require('./csse_covid_19_data')
 
 
 per_million = (x,y) ->
@@ -24,9 +24,13 @@ normal_sort = (spec) ->
     return 0 
 
 
-class Covid_Data
+class Covid_19_Data
 
-  constructor: (@id) ->
+  constructor: (spec) ->
+    for k in ['id', 'main_column', 'date', 'covid_19_data', 'population_data']
+      this[k] = spec[k]
+    @main_column.id = @main_column.key.replace(/_/g, '-')
+    @data = @merge_data()
     @views = []
     @current_sort =
       column: null
@@ -34,33 +38,19 @@ class Covid_Data
 
   # call after document loaded
   init: =>
-    @init_data()
-    .then (csse_data) =>
-      @world = csse_data
-      @date = @covid_data_source.date
-      @data = @merge_data()
-      @add_view(@data)
-
-  # async
-  init_data: =>
-    Population_Data_Source = window.Population_Data_Source
-    CSSE_Covid_19_Data_Source = window.CSSE_Covid_19_Data_Source
-    @population_data_source = new Population_Data_Source()
-    @covid_data_source = new CSSE_Covid_19_Data_Source()
-    return @covid_data_source.fetch_data()
+    @add_view(@data)
 
   merge_data: =>
     data = []
-    for country, obj of @world.countries
-      population = @population_data_source.get(country)
+    for name, obj of @covid_19_data
+      population = @population_data[name]
       if population && population > 1000000
         cases = obj.cases
         cases_per_million = per_million(cases,population)
         deaths = obj.deaths
         deaths_per_million = per_million(deaths,population)
         deaths_per_cent = (100*deaths/cases).toFixed()
-        data.push {
-          country,
+        row = {
           population,
           cases,
           cases_per_million,
@@ -68,6 +58,8 @@ class Covid_Data
           deaths_per_million,
           deaths_per_cent
         }
+        row[@main_column.key] = name
+        data.push(row)
     return data
     
   update_views: =>
@@ -76,7 +68,7 @@ class Covid_Data
 
   add_view: =>
     view_id = @views.length
-    parent_elt_id = "#{@id}_div"
+    parent_elt_id = "#{@id}-div"
     view = new Table_View(this, view_id, parent_elt_id)
     view.update()
     @views.push(view)
@@ -91,7 +83,7 @@ class Covid_Data
 class Style_Manager
 
   constructor: ->
-    @current_style = 'light'
+    @current_style = 'dark'
     @styles =
       light: document.getElementById('light-style')
       dark: document.getElementById('dark-style')
@@ -109,18 +101,23 @@ class Table_View
 
   constructor: (@table, @id, @parent_elt_id) ->
     console.log @parent_elt_id
-    @elt_id = "#{@id}_view_#{}"
+    @elt_id = "#{@id}-iew_#{}"
     @elt = document.createElement('table')
     @elt.setAttribute('id', @elt_id)
     @elt.setAttribute('class', 'table-view')
     @date_elt = document.createElement('p')
     @date_elt.innerText = "#{@table.date}"
+    @style_manager = new Style_Manager()
+    @toggle_button = document.createElement('button')
+    @toggle_button.setAttribute('id', 'toggle-button')
+    @toggle_button.innerText = "Toggle Style"
+    @toggle_button.onclick = @style_manager.toggle_style
     @parent_elt = document.getElementById(@parent_elt_id)
     @parent_elt.appendChild(@date_elt)
+    @parent_elt.appendChild(@toggle_button)
     @parent_elt.appendChild(@elt)
-    @h1_elt = document.getElementById('table-h1')
-    @h1_elt.innerHTML = "Corona Virus Data by Country"
-    @style_manager = new Style_Manager()
+    @h1_elt = @parent_elt.getElementsByClassName('table-h1')[0]
+    @h1_elt.innerHTML = "Corona Virus Data by #{@table.main_column.name}"
     @thead = new Table_Header(@table)
     @tbody = new Table_Body(@table)
     @elt.appendChild(@thead.elt)
@@ -150,7 +147,11 @@ class Table_View
     if column != null
       for th_elt in  @elt.getElementsByClassName('column-header')
         th_elt.classList.remove('highlight')
-      for td_elt in @elt.getElementsByClassName(column.replace(/_/g,'-'))
+        className = column.replace(/_/g,'-')
+        console.log("highlighting: #{className} column.")
+        elements = @elt.getElementsByClassName(className)
+        console.log elements
+      for td_elt in elements
         td_elt.classList.add('highlight')
 
 
@@ -162,16 +163,16 @@ class Table_Header
     @tr_elt = document.createElement('tr')
     @elt.appendChild(@tr_elt)
     @defaults = {}
-
+  
     @add_column('rank', {
        innerHTML: '#'
-       classes: ['rank', 'highlight']
+       classes: ['rank']
        })
 
-    @add_column('country', {
+    @add_column( @table.main_column.key, {
       sort_order: 'ascending'
-      innerHTML: 'Country'
-      classes: ['country', 'column-header']
+      innerHTML: @table.main_column.name
+      classes: [@table.main_column.id, 'main-column', 'column-header']
       })
 
     @add_column('population', {
@@ -253,8 +254,8 @@ class Table_Body
     for obj in @table.data
       rows += """
         <tr>
-          <td class="rank highlight"> #{row_num++} </td>
-          <td class="country"> #{obj.country} </td>
+          <td class="rank"> #{row_num++} </td>
+          <td class="#{@table.main_column.id} main-column"> #{obj[@table.main_column.key]} </td>
           <td class="population"> #{obj.population} </td>
           <td class="cases"> #{obj.cases} </td>
           <td class="cases-per-million"> #{obj.cases_per_million} </td>
@@ -267,9 +268,9 @@ class Table_Body
 
 
 if window?
-  window.Covid_Data = Covid_Data
+  window.Covid_19_Data = Covid_19_Data
 
 else
-  exports.Covid_Data = Covid_Data
+  exports.Covid_19_Data = Covid_19_Data
 
 

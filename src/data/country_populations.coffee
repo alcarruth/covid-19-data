@@ -1,4 +1,9 @@
-{
+#!/usr/bin/env coffee
+#
+
+countries: {
+  url: "https://data.un.org/Data.aspx?d=PopDiv&f=variableID%3a12%3btimeID%3a84%3bvarID%3a2&c=2,7&v=1",
+  populations: {
    "Afghanistan": 38041754,
    "Albania": 2880917,
    "Algeria": 43053054,
@@ -177,4 +182,23 @@
    "South Sudan": 11062113,
    "Western Sahara": 582463,
    "Sao Tome and Principe": 215056
+  }
 }
+
+class Population_Data
+
+  constructor: (url, population) ->
+    @url = url
+    @populations = populations
+
+  get: (name) =>
+    @populations[name]
+
+    
+if window?
+  window.Population_Data_Source = Population_Data_Source
+
+else
+  exports.Population_Data_Source = Population_Data_Source
+   
+ 
