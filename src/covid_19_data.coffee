@@ -7,9 +7,9 @@ if window?
 else
   fetch = require('node-fetch')
   csv = require('csvtojson')
-  population_data = require('./js/populations.json')
-  csse_covid_19_data = require('./csse_covid_19_data')
   sortable_table = require('sortable_table')
+  population_data = require('./population_data')
+  csse_covid_19_data = require('./csse_covid_19_data')
 
 
 per_million = (x,y) ->
@@ -161,10 +161,63 @@ class Covid_19_Data_View
     @elt.appendChild(@table.elt)
 
 
+create_country_data = (csse_covid_19_data, population_data) ->
+  country_data = new Covid_19_Data({
+    id: 'country-data'
+    date: csse_covid_19_data.date
+    main_column:
+       key: 'country'
+       name: 'Country'
+    covid_19_data: csse_covid_19_data.world.countries
+    population_data: population_data.countries
+  })
+  return country_data
+
+
+create_state_data = (csse_covid_19_data, population_data) ->
+  state_data = new Covid_19_Data({
+    id: 'state-data'
+    date: csse_covid_19_data.date
+    main_column:
+      key: 'state'
+      name: 'State'
+    covid_19_data: csse_covid_19_data.world.countries.US.states
+    population_data: population_data.states
+    })
+  return state_data
+
+
+init_covid_19_data = ->
+
+  if window?
+
+    create_CSSE_Covid_19_Data = window.create_CSSE_Covid_19_Data
+    population_data = window.population_data
+    
+    covid_19_data = await create_CSSE_Covid_19_Data()
+    country_data = create_country_data(covid_19_data, population_data);
+    state_data = create_state_data(covid_19_data, population_data);
+    
+    covid_19_div = document.getElementById("corona-virus-data");
+    country_data.add_view(covid_19_div);
+    state_data.add_view(covid_19_div);
+  
+    window.country_data = country_data;
+    window.state_data = state_data;
+
+    return covid_19_data
+
+  else
+    
+    covid_19_data = await create_CSSE_Covid_19_Data()
+    country_data = create_country_data(covid_19_data, population_data);
+    state_data = create_state_data(covid_19_data, population_data);
+
+
 if window?
-  window.Covid_19_Data = Covid_19_Data
-
+  window.init_covid_19_data = init_covid_19_data
+  
 else
-  exports.Covid_19_Data = Covid_19_Data
+  exports.init = init_covid_19_data
 
-
+  

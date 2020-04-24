@@ -25,36 +25,10 @@
   <div id="corona-virus-data">
   </div>
 </body>
+
 <script>
-  csse_covid_19_data.init()
-  .then(()=>{
 
-  covid_19_div = document.getElementById("corona-virus-data")
-
-  country_data = new Covid_19_Data({
-  id: 'country-data',
-  date: csse_covid_19_data.date,
-  main_column: { key: 'country', name: 'Country' },
-  covid_19_data: csse_covid_19_data.world.countries,
-  population_data: population_data.countries
-  })
-  country_data.add_view(covid_19_div)
-
-  state_data = new Covid_19_Data({
-  id: 'state-data',
-  date: csse_covid_19_data.date,
-  main_column: {
-  key: 'state',
-  name: 'State',
-  },
-  covid_19_data: csse_covid_19_data.world.countries.US.states,
-  population_data: population_data.states
-  })
-  state_data.add_view(covid_19_div)
+  init_covid_19_data()
   
-  window.country_data = country_data
-  window.state_data = state_data
-  })
-
 </script>
 </html>

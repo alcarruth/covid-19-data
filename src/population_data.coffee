@@ -235,8 +235,10 @@ population_data = {
   }
 }
 
+
 if window?
   window.population_data = population_data
+
 else
   module.exports = population_data
   

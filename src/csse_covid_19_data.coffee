@@ -8,6 +8,7 @@ else
   fetch = require('node-fetch')
   csv = require('csvtojson')
 
+
 class CSSE_Covid_19_Data_Source
 
   constructor: ->
@@ -21,6 +22,7 @@ class CSSE_Covid_19_Data_Source
     @world = new CSSE_Data_World(csse_data)
     @countries = @world.countries
     @states = @countries.US.states
+    return this
     
   date_to_url: (date) =>
     month = "0#{date.getMonth()+1}"[-2..]
@@ -128,11 +130,17 @@ class CSSE_Data_Admin2
       @cases += Number(d.Confirmed)
       @deaths += Number(d.Deaths)
     
+# async
+create_CSSE_Covid_19_Data = ->
+  csse_Covid_19_Data  = new CSSE_Covid_19_Data_Source()
+  return csse_Covid_19_Data.init()
 
    
 if window?
-  window.csse_covid_19_data = new CSSE_Covid_19_Data_Source()
+  window.CSSE_Covid_19_Data_Source = CSSE_Covid_19_Data_Source
+  window.create_CSSE_Covid_19_Data = create_CSSE_Covid_19_Data
 
 else
-  module.exports = new CSSE_Covid_19_Data_Source()
+  exports.CSSE_Covid_19_Data_Source = CSSE_Covid_19_Data_Source
+  exports.create = create_CSSE_Covid_19_Data
 
