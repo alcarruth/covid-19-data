@@ -1,6 +1,6 @@
 #!/bin/sh
 
-root_dir="/var/www/git/projects/Corona_Virus/"
+root_dir="/opt/git/covid_19_data/"
 
 cd ${root_dir}
 
@@ -18,6 +18,7 @@ cp src/js/* build/js/
 
 cp node_modules/csvtojson/browser/csvtojson.min.js build/js/
 cp node_modules/csvtojson/browser/browser.js build/js/
+cp node_modules/sortable_table/browser/*.js build/js/
 
 cp -r build/js/* browser/js/
 cp -r build/css/* browser/css/

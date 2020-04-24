@@ -1,5 +1,5 @@
 {
-  "name": "corona_virus",
+  "name": "covid_19_data",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "/opt/git/Corona_Virus"
+    "url": "/opt/git/covid_19_data"
   },
   "keywords": [
     "Corona",
@@ -20,6 +20,7 @@
   "license": "ISC",
   "dependencies": {
     "coffeescript": "^2.5.1",
+    "sortable_table": "/opt/git/sortable_table",
     "csv": "^5.3.2",
     "csvtojson": "^2.0.10",
     "node-fetch": "^2.6.0",
