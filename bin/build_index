@@ -9,10 +9,11 @@ coffee = require('coffeescript')
 nunjucks = require('nunjucks')
 nunjucks.configure({ autoescape: false })
 
-root_dir = '/opt/git/covid_19_data/'
-build_dir = "#{root_dir}/build"
-browser_dir = "#{root_dir}/browser"
-template_dir = "#{root_dir}/src/templates"
+{ package_root } = require('./settings')
+
+build_dir = "#{package_root}/build"
+browser_dir = "#{package_root}/browser"
+template_dir = "#{package_root}/src/templates"
 
 index_template_file = 'index_template.html'
 style_file = 'style.css'

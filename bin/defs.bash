@@ -1,8 +1,8 @@
 #!/bin/bash
 
-root_dir="/opt/git/covid_19_data/"
+. bin/buildrc
 
-cd ${root_dir}
+cd ${package_root}
 
 command="${1}";
 

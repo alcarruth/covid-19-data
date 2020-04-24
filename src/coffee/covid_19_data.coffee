@@ -2,7 +2,7 @@
 #
 
 csv = require('csvtojson')
-sortable_table = require('sortable_table')
+sortable_table = require('sortable-table')
 population_data = require('./population_data')
 csse_covid_19_data = require('./csse_covid_19_data')
 
