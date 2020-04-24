@@ -45,8 +45,8 @@ index_template = load_template(index_template_file)
 
 build_index_links = ->
   style_css = css_link(style_file)
-  light_colors_css = css_link(light_colors_file) 
-  dark_colors_css = css_link(dark_colors_file)
+  light_colors_css = css_include(light_colors_file, 'light-style') 
+  dark_colors_css = css_include(dark_colors_file, 'dark-style')
   covid_19_data_js = js_link(covid_19_data_js_file)
   index_html = nunjucks.renderString(index_template, {
     style_css, light_colors_css, dark_colors_css, covid_19_data_js

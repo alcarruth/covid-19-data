@@ -3,7 +3,7 @@
 (function() {
   //!/usr/bin/env coffee
 
-  var Covid_19_Data, Covid_19_Data_View, Style_Manager, create_country_data, create_state_data, csse_covid_19_data, csv, init_covid_19_data, per_million, population_data, sortable_table;
+  var Covid_19_Data, Covid_19_Data_View, Style_Manager, create_country_data, create_state_data, csse_covid_19_data, csv, document, init_covid_19_data, per_million, population_data, sortable_table;
 
   csv = require('csvtojson');
 
@@ -12,6 +12,14 @@
   population_data = require('./population_data');
 
   csse_covid_19_data = require('./csse_covid_19_data');
+
+  console.log(`covid_19_data: document: ${document}`);
+
+  if (typeof window !== "undefined" && window !== null) {
+    document = window.document;
+  }
+
+  console.log(`covid_19_data: document: ${document}`);
 
   per_million = function(x, y) {
     if (y !== 0) {
@@ -877,9 +885,17 @@ exports.Response = global.Response;
 (function() {
   //!/usr/bin/env coffee
 
-  var Sortable_Table, Sortable_Table_Body, Sortable_Table_Header, deep, normal_sort;
+  var Sortable_Table, Sortable_Table_Body, Sortable_Table_Header, deep, document, normal_sort;
 
   deep = require('deep');
+
+  console.log(`sortable_table: document: ${document}`);
+
+  if (typeof window !== "undefined" && window !== null) {
+    document = window.document;
+  }
+
+  console.log(`sortable_table: document: ${document}`);
 
   normal_sort = function(spec) {
     var column, direction;

@@ -6,7 +6,11 @@ sortable_table = require('sortable_table')
 population_data = require('./population_data')
 csse_covid_19_data = require('./csse_covid_19_data')
 
-
+console.log("covid_19_data: document: #{document}")
+if window?
+  document = window.document
+console.log("covid_19_data: document: #{document}")
+  
 per_million = (x,y) ->
   if y != 0
     return Number((1000000 * x / y).toFixed())
