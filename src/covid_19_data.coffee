@@ -117,7 +117,7 @@ class Covid_19_Data_View
         key: @parent.main_column.key
         sort_order: 'ascending'
         heading_text: @parent.main_column.name
-        classes: ['country', 'main-column']
+        classes: [@parent.main_column.key.replace(/_/g,'-'), 'main-column']
         }
       {
         key: 'population'
