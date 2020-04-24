@@ -1,5 +1,5 @@
 {
-  "name": "covid_19_data",
+  "name": "covid-19-data",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "/opt/git/covid_19_data"
+    "url": "/opt/git/covid-19-data"
   },
   "keywords": [
     "Corona",
@@ -19,7 +19,7 @@
   "author": "Al Carruth",
   "license": "ISC",
   "dependencies": {
-    "sortable_table": "/opt/git/sortable_table",
+    "sortable-table": "/opt/git/sortable-table",
     "csv": "^5.3.2",
     "csvtojson": "^2.0.10",
     "node-fetch": "^2.6.0"
