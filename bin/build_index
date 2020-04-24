@@ -1,0 +1,74 @@
+#!/usr/bin/env coffee
+#
+# package Corona_Virus
+# bin/build.coffee
+#
+
+fs = require('fs')
+coffee = require('coffeescript')
+nunjucks = require('nunjucks')
+nunjucks.configure({ autoescape: false })
+
+root_dir = '/opt/git/covid_19_data/'
+build_dir = "#{root_dir}/build"
+browser_dir = "#{root_dir}/browser"
+template_dir = "#{root_dir}/src/templates"
+
+index_template_file = 'index_template.html'
+style_file = 'style.css'
+light_colors_file = 'light_colors.css'
+dark_colors_file = 'dark_colors.css'
+covid_19_data_js_file = 'covid_19_data.js'
+
+
+
+css_link = (css_file) ->
+  "<link href=\"css/#{css_file}\" rel=\"stylesheet\">"
+
+css_include = (css_file, id) ->
+  css = fs.readFileSync("#{build_dir}/css/#{css_file}", 'utf8')
+  "<style id=\"#{id}\"> #{css} </style>"
+
+js_link = (js_file) ->
+  "<script src=\"js/#{js_file}\"></script>"
+
+js_include = (js_file) ->
+  js = fs.readFileSync("#{browser_dir}/js/#{js_file}", 'utf8')
+  "<script> #{js} </script>"
+
+load_template = (template_file) ->
+  fs.readFileSync("#{template_dir}/#{template_file}", 'utf8')
+
+
+
+index_template = load_template(index_template_file)
+
+build_index_links = ->
+  style_css = css_link(style_file)
+  light_colors_css = css_link(light_colors_file) 
+  dark_colors_css = css_link(dark_colors_file)
+  covid_19_data_js = js_link(covid_19_data_js_file)
+  index_html = nunjucks.renderString(index_template, {
+    style_css, light_colors_css, dark_colors_css, covid_19_data_js
+    })
+  fs.writeFileSync("#{browser_dir}/index_links.html", index_html)
+
+
+build_index_include = ->
+  style_css = css_include(style_file)
+  light_colors_css = css_include(light_colors_file) 
+  dark_colors_css = css_include(dark_colors_file)
+  covid_19_data_js = js_include(covid_19_data_js_file)
+  index_html = nunjucks.renderString(index_template, {
+    style_css, light_colors_css, dark_colors_css, covid_19_data_js
+    })
+  fs.writeFileSync("#{browser_dir}/index_include.html", index_html)
+
+if not module.parent
+  build_index_links()
+  build_index_include()
+  
+
+exports.links = build_index_links
+exports.include = build_index_include
+

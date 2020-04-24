@@ -1,15 +1,10 @@
 #!/usr/bin/env coffee
 #
 
-if window?
-  fetch = window.fetch
-
-else
-  fetch = require('node-fetch')
-  csv = require('csvtojson')
-  sortable_table = require('sortable_table')
-  population_data = require('./population_data')
-  csse_covid_19_data = require('./csse_covid_19_data')
+csv = require('csvtojson')
+sortable_table = require('sortable_table')
+population_data = require('./population_data')
+csse_covid_19_data = require('./csse_covid_19_data')
 
 
 per_million = (x,y) ->
@@ -157,7 +152,7 @@ class Covid_19_Data_View
         }
     ]
 
-    @table = new Sortable_Table(@parent.data, columns)
+    @table = new sortable_table.Sortable_Table(@parent.data, columns)
     @elt.appendChild(@table.elt)
 
 
@@ -191,10 +186,7 @@ init_covid_19_data = ->
 
   if window?
 
-    create_CSSE_Covid_19_Data = window.create_CSSE_Covid_19_Data
-    population_data = window.population_data
-    
-    covid_19_data = await create_CSSE_Covid_19_Data()
+    covid_19_data = await csse_covid_19_data.create()
     country_data = create_country_data(covid_19_data, population_data);
     state_data = create_state_data(covid_19_data, population_data);
     
@@ -209,14 +201,14 @@ init_covid_19_data = ->
 
   else
     
-    covid_19_data = await create_CSSE_Covid_19_Data()
+    covid_19_data = await csse_covid_19_data.create()
     country_data = create_country_data(covid_19_data, population_data);
     state_data = create_state_data(covid_19_data, population_data);
 
 
 if window?
   window.init_covid_19_data = init_covid_19_data
-  
+
 else
   exports.init = init_covid_19_data
 

@@ -1,12 +1,8 @@
 #!/usr/bin/env coffee
 #
 
-if window?
-  fetch = window.fetch
-  csv = window.csv
-else
-  fetch = require('node-fetch')
-  csv = require('csvtojson')
+fetch = require('node-fetch')
+csv = require('csvtojson')
 
 
 class CSSE_Covid_19_Data_Source
@@ -136,11 +132,6 @@ create_CSSE_Covid_19_Data = ->
   return csse_Covid_19_Data.init()
 
    
-if window?
-  window.CSSE_Covid_19_Data_Source = CSSE_Covid_19_Data_Source
-  window.create_CSSE_Covid_19_Data = create_CSSE_Covid_19_Data
-
-else
-  exports.CSSE_Covid_19_Data_Source = CSSE_Covid_19_Data_Source
-  exports.create = create_CSSE_Covid_19_Data
+exports.CSSE_Covid_19_Data_Source = CSSE_Covid_19_Data_Source
+exports.create = create_CSSE_Covid_19_Data
 

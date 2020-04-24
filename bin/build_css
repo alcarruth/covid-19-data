@@ -2,4 +2,4 @@
 
 . bin/defs.bash
 
-run build;
+run build_css;
