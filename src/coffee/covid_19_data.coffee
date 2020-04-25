@@ -40,6 +40,7 @@ class Covid_19_Data
     @main_column = spec.main_column
     @covid_19_data = spec.covid_19_data
     @population_data = spec.population_data
+    @min_population = spec.min_population || 1000000
 
     @data = @merge_data()
     @views = []
@@ -53,7 +54,8 @@ class Covid_19_Data
     rank = 1
     for name, obj of @covid_19_data
       population = @population_data[name]
-      if population && population > 1000000
+      if population && population > @min_population
+        console.log population, @min_population
         cases = obj.cases
         cases_per_million = per_million(cases,population)
         deaths = obj.deaths
@@ -167,6 +169,7 @@ create_country_data = (csse_covid_19_data, population_data) ->
        name: 'Country'
     covid_19_data: csse_covid_19_data.world.countries
     population_data: population_data.countries
+    min_population: 10000000
   })
   return country_data
 
@@ -180,6 +183,7 @@ create_state_data = (csse_covid_19_data, population_data) ->
       name: 'State'
     covid_19_data: csse_covid_19_data.world.countries.US.states
     population_data: population_data.states
+    min_population: 1
     })
   return state_data
 

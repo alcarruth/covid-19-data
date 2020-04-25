@@ -63,6 +63,7 @@
       this.main_column = spec.main_column;
       this.covid_19_data = spec.covid_19_data;
       this.population_data = spec.population_data;
+      this.min_population = spec.min_population || 1000000;
       this.data = this.merge_data();
       this.views = [];
     }
@@ -79,7 +80,8 @@
       for (name in ref) {
         obj = ref[name];
         population = this.population_data[name];
-        if (population && population > 1000000) {
+        if (population && population > this.min_population) {
+          console.log(population, this.min_population);
           cases = obj.cases;
           cases_per_million = per_million(cases, population);
           deaths = obj.deaths;
@@ -200,7 +202,8 @@
         name: 'Country'
       },
       covid_19_data: csse_covid_19_data.world.countries,
-      population_data: population_data.countries
+      population_data: population_data.countries,
+      min_population: 10000000
     });
     return country_data;
   };
@@ -215,7 +218,8 @@
         name: 'State'
       },
       covid_19_data: csse_covid_19_data.world.countries.US.states,
-      population_data: population_data.states
+      population_data: population_data.states,
+      min_population: 1
     });
     return state_data;
   };
