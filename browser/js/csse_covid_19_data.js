@@ -43,12 +43,7 @@
     }
 
     fetch_url(url) {
-      var e;
-      try {
-        return fetch(this.url);
-      } catch (error) {
-        e = error;
-      }
+      return fetch(this.url);
     }
 
     async fetch_csse_data() {
@@ -58,7 +53,7 @@
       while (res.status !== 200) {
         this.date.setDate(this.date.getDate() - 1);
         this.url = this.date_to_url(this.date);
-        res = (await this.fetch_url(this.url));
+        res = (await fetch(this.url));
       }
       csv_str = (await res.text());
       csse_data = csv().fromString(csv_str);

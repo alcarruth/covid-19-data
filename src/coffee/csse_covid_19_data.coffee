@@ -29,10 +29,8 @@ class CSSE_Covid_19_Data_Source
     return url
 
   fetch_url: (url) =>
-    try
-      return fetch(@url)
-    catch e
-      
+    fetch(@url)
+    
   # async
   fetch_csse_data: =>
     @url = @date_to_url(@date)
@@ -40,7 +38,7 @@ class CSSE_Covid_19_Data_Source
     while res.status != 200
       @date.setDate(@date.getDate()-1)
       @url = @date_to_url(@date)
-      res = await @fetch_url(@url)
+      res = await fetch(@url)
     csv_str = await res.text()
     csse_data = csv().fromString(csv_str)
     return csse_data
