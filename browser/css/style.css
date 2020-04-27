@@ -203,9 +203,32 @@ div#corona-virus-data {
   margin: auto;
 }
 
-#toggle-button {
+#header-left {
+  width: 75%;
+  display: inline-flex;
+}
+
+#cv-data-date {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+#header-right {
+  width: auto;
+  display: inline-flex;
+}
+
+#toggle-style-button,
+#toggle-view-button {
+  width: auto;
   margin-right: 0;
-  margin-left: auto;
+  margin-left: 10px;
+  border-width: medium;
+  border-radius: 4px;
+  padding: 5px;
+  padding-left: 7px;
+  padding-right: 7px;
+  font-size: smaller;
 }
 
 h1 {

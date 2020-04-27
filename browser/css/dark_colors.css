@@ -3,9 +3,15 @@ body {
   background-color: #333;
 }
 
-#toggle-button {
-  color: #eee;
-  background: #33a;
+#cv-data-date {
+  font-color: #bbb;
+}
+
+#toggle-style-button,
+#toggle-view-button {
+  color: #bbb;
+  background: #222;
+  border-color: #bbb;
 }
 
 h1 span.description {

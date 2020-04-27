@@ -1,16 +1,21 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Corona Virus Table</title>
-  <meta charset='utf-8' />
-  <meta name='viewport' content='initial-scale=1,user-scalable=yes' />
-  <link href="css/style.css" rel="stylesheet">
-  <style id="light-style"> body {
+  <head>
+    <title> Corona Virus Table </title>
+    <meta charset='utf-8' />
+    <meta name='viewport' content='initial-scale=1,user-scalable=yes' />
+    <link href="css/style.css" rel="stylesheet">
+    <style id="light-style"> body {
   color: #333;
   background-color: #fafafa;
 }
 
-#toggle-button {
+#cv-data-date {
+  font-color: #333;
+}
+
+#toggle-style-button,
+#toggle-view-button {
   color: #33a;
   background: #eee;
 }
@@ -74,14 +79,20 @@ table td.rank {
 }
 
  </style>
-  <style id="dark-style"> body {
+    <style id="dark-style"> body {
   color: #bbb;
   background-color: #333;
 }
 
-#toggle-button {
-  color: #eee;
-  background: #33a;
+#cv-data-date {
+  font-color: #bbb;
+}
+
+#toggle-style-button,
+#toggle-view-button {
+  color: #bbb;
+  background: #222;
+  border-color: #bbb;
 }
 
 h1 span.description {
@@ -142,15 +153,13 @@ table td.rank {
 }
 
  </style>
-  <script src="js/covid_19_data.js"></script>
-</head>
-<body>
-  <div id="corona-virus-data">
-  </div>
-</body>
-
-<script>
-  init_covid_19_data()
-</script>
-
+    <script src="js/covid_19_data.js"></script>
+  </head>
+  <body>
+    <div id="corona-virus-data">
+    </div>
+  </body>
+  <script>
+    init_covid_19_data()
+  </script>
 </html>

@@ -3,7 +3,12 @@ body {
   background-color: #fafafa;
 }
 
-#toggle-button {
+#cv-data-date {
+  font-color: #333;
+}
+
+#toggle-style-button,
+#toggle-view-button {
   color: #33a;
   background: #eee;
 }

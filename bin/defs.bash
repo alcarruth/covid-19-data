@@ -21,6 +21,12 @@ function build_js {
     coffee -c -o build/js/ src/coffee/population_data.coffee
 }
 
+function build_js_map {
+    coffee -cM -o build/js/ src/coffee/covid_19_data.coffee
+    coffee -cM -o build/js/ src/coffee/csse_covid_19_data.coffee
+    coffee -cM -o build/js/ src/coffee/population_data.coffee
+}
+
 function build_css {
     cat \
         src/css/reset.css \
@@ -47,6 +53,7 @@ function build_index {
 function build {
     clean;
     build_js;
+    #build_js_map;
     build_css;
     build_browser;
     build_index;
