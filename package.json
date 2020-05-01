@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/alcarruth/covid-19-data.git#stable"
+    "url": "git+https://github.com/alcarruth/covid-19-data.git#stable"
   },
   "keywords": [
     "Corona",
@@ -23,7 +23,7 @@
     "csv": "^5.3.2",
     "csvtojson": "^2.0.10",
     "node-fetch": "^2.6.0",
-    "sortable-table": "https://github.com/alcarruth/sortable-table.git#stable"
+    "sortable-table": "git+https://github.com/alcarruth/sortable-table.git#stable"
   },
   "devDependencies": {
     "browserify": "^16.5.1",
