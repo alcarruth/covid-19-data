@@ -1,7 +1,8 @@
 {
   "name": "covid-19-data",
   "version": "1.0.0",
-  "description": "",
+  "branch": "stable",
+  "description": "Displays covid-19 pandemic data for US states and countries in a sortable table.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
