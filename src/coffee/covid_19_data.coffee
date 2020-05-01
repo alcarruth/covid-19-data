@@ -73,6 +73,25 @@ class Style_Manager
 
 
 
+class Style_Manager
+
+  constructor: ->
+    @current_style = 'dark'
+    @styles =
+      light: document.getElementById('light-style')
+      dark: document.getElementById('dark-style')
+
+  set_style: (name) =>
+    style = @styles[name]
+    document.head.appendChild(style)
+    @current_style = name
+
+  toggle_style: =>
+    name = { light: 'dark', dark: 'light' }[@current_style]
+    @set_style(name)
+
+
+
     
 class Covid_19_Data_View
 
