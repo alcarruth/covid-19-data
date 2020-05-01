@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "/opt/git/covid-19-data"
+    "url": "git@github.com:alcarruth/covid-19-data.git#stable"
   },
   "keywords": [
     "Corona",
