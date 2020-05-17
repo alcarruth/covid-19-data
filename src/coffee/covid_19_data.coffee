@@ -34,7 +34,7 @@ class Covid_19_Data
         cases_per_million = per_million(cases,population)
         deaths = obj.deaths
         deaths_per_million = per_million(deaths,population)
-        deaths_per_cent = (100*deaths/cases).toFixed()
+        deaths_per_cent = Number((100*deaths/cases).toFixed())
         row = {
           rank: rank++
           population: population
