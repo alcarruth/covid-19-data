@@ -21,11 +21,15 @@ div#corona-virus-data {
   display: inline-flex;
 }
 
+#buttons {
+  margin-top: 20px;
+}
+
 #toggle-style-button,
 #toggle-view-button {
   width: auto;
-  margin-right: 0;
-  margin-left: 10px;
+  margin-right: 10px;
+  margin-left: 0;
   border-width: medium;
   border-radius: 4px;
   padding: 5px;

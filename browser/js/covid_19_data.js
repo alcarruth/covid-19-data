@@ -694,6 +694,7 @@ process.umask = function() { return 0; };
 
   Covid_19_Data_View_Header = class Covid_19_Data_View_Header {
     constructor(parent) {
+      var url;
       this.set_table_type = this.set_table_type.bind(this);
       this.parent = parent;
       this.elt = document.createElement('div');
@@ -702,11 +703,11 @@ process.umask = function() { return 0; };
       this.elt.appendChild(this.h1_elt);
       this.date_elt = document.createElement('p');
       this.date_elt.setAttribute('id', 'cv-data-date');
-      this.date_elt.innerText = `${this.parent.date}`;
-      this.header_left = document.createElement('div');
-      this.header_left.setAttribute('id', 'header-left');
-      this.header_left.appendChild(this.date_elt);
-      this.elt.appendChild(this.header_left);
+      url = "https://github.com/CSSEGISandData/COVID-19";
+      this.date_elt.innerHTML = "Data provided by Johns Hopkins University ";
+      this.date_elt.innerHTML += "Center for Systems Science and Engineering (JHU CSSE) <br>";
+      this.date_elt.innerHTML += `Fetched from <a href=\"${url}\"> ${url} </a> ${this.parent.date}`;
+      this.elt.appendChild(this.date_elt);
       this.toggle_style_button = document.createElement('button');
       this.toggle_style_button.setAttribute('id', 'toggle-style-button');
       this.toggle_style_button.innerText = "Toggle Style";
@@ -715,11 +716,17 @@ process.umask = function() { return 0; };
       this.toggle_view_button.setAttribute('id', 'toggle-view-button');
       this.toggle_view_button.innerText = "view by states";
       this.toggle_view_button.onclick = this.parent.toggle_view;
+      this.header_left = document.createElement('div');
+      this.header_left.setAttribute('id', 'header-left');
+      //@elt.appendChild(@header_left)
       this.header_right = document.createElement('div');
       this.header_right.setAttribute('id', 'header-right');
-      this.header_right.appendChild(this.toggle_style_button);
-      this.header_right.appendChild(this.toggle_view_button);
-      this.elt.appendChild(this.header_right);
+      //@elt.appendChild(@header_right)
+      this.buttons = document.createElement('div');
+      this.buttons.setAttribute('id', 'buttons');
+      this.buttons.appendChild(this.toggle_style_button);
+      this.buttons.appendChild(this.toggle_view_button);
+      this.elt.appendChild(this.buttons);
     }
 
     set_table_type(type, other_type) {
@@ -828,36 +835,64 @@ process.umask = function() { return 0; };
 
   csv = require('csvtojson');
 
+  // Class CSSE_Covid_19_Data_Source
+
+  // Creates an object used to fetch the raw datat from the Johns Hopkins
+  // University Center for Systems Science and Engineering (JHU CSSE)
+  // Github repo at https://github.com/CSSEGISandData/COVID-19
+
   CSSE_Covid_19_Data_Source = class CSSE_Covid_19_Data_Source {
     constructor() {
+      // Async Method @init()
+      // Initializes data by fetching most recent data from CSSE.
+
       this.init = this.init.bind(this);
+      // Method date_to_url(date)
+      // Args:
+      //  date: a Date() object
+      // Returns: a url suitable for calling @fetch_url(url)
+
       this.date_to_url = this.date_to_url.bind(this);
+      // Method fetch_url
+      // Args:
+      //  url fetch the url
+
+      // TODO: this method was created to allow fetching from nodejs.  Is
+      // this still relevant? Why not just call fetch directly?
+
       this.fetch_url = this.fetch_url.bind(this);
       
-      // async
+      // async method @fetch_csse_data()
+      // returns data no later than @date.
+
       this.fetch_csse_data = this.fetch_csse_data.bind(this);
       this.path = "/csse_covid_19_data/csse_covid_19_daily_reports";
       this.repo_root = "raw.githubusercontent.com/CSSEGISandData/COVID-19/master";
-      this.date = new Date();
-      this.url = this.date_to_url(this.date);
+      // The following properties are set by method @init()
+
+      this.date = null;
+      this.url = null;
+      this.csse_data = null;
+      this.world = null;
+      this.countries = null;
+      this.states = null;
     }
 
     async init() {
-      var csse_data;
-      csse_data = (await this.fetch_csse_data());
-      this.world = new CSSE_Data_World(csse_data);
+      this.csse_data = (await this.fetch_csse_data());
+      this.world = new CSSE_Data_World(this.csse_data);
       this.countries = this.world.countries;
       this.states = this.countries.US.states;
       return this;
     }
 
     date_to_url(date) {
-      var csv_file, day, month, url, year;
+      var csv_file_name, day, month, url, year;
       month = `0${date.getMonth() + 1}`.slice(-2);
       day = `0${date.getDate()}`.slice(-2);
       year = date.getFullYear();
-      csv_file = `${month}-${day}-${year}.csv`;
-      url = `https://${this.repo_root}/${this.path}/${csv_file}`;
+      csv_file_name = `${month}-${day}-${year}.csv`;
+      url = `https://${this.repo_root}/${this.path}/${csv_file_name}`;
       return url;
     }
 
@@ -867,13 +902,16 @@ process.umask = function() { return 0; };
 
     async fetch_csse_data() {
       var csse_data, csv_str, res;
+      this.date = new Date();
       this.url = this.date_to_url(this.date);
       res = (await this.fetch_url(this.url));
       while (res.status !== 200) {
+        // not successful so try prior day
         this.date.setDate(this.date.getDate() - 1);
         this.url = this.date_to_url(this.date);
         res = (await fetch(this.url));
       }
+      // success! so convert result to json
       csv_str = (await res.text());
       csse_data = csv().fromString(csv_str);
       return csse_data;
@@ -881,7 +919,13 @@ process.umask = function() { return 0; };
 
   };
 
+  
+    // Class CSSE_Data_World
+
   CSSE_Data_World = class CSSE_Data_World {
+    // Creates an object containing CSSE data for the countries
+    // of the world.
+
     constructor(data) {
       this.init = this.init.bind(this);
       this.data = data;
@@ -893,6 +937,7 @@ process.umask = function() { return 0; };
 
     init() {
       var hash, i, key, len, ref, results, val, x;
+      // hash is used to collect data for each Country_Region
       hash = {};
       ref = this.data;
       for (i = 0, len = ref.length; i < len; i++) {
@@ -916,8 +961,20 @@ process.umask = function() { return 0; };
 
   };
 
+  
+    // Class CSSE_Country_Region
+
   CSSE_Data_Country_Region = class CSSE_Data_Country_Region {
+    // Constructs an object containing CSSE data for a Country_Region.
+    // Args:
+    //   @parent: an instance of CSSE_Data_World 
+    //   @data: data for the Country_Region
+
     constructor(parent, data) {
+      // Method @init()
+      // Calculates the number of cases and deaths.
+      // Adds objects for each sub-region.
+
       this.init = this.init.bind(this);
       this.parent = parent;
       this.data = data;
@@ -929,6 +986,8 @@ process.umask = function() { return 0; };
 
     init() {
       var hash, i, key, len, ref, results, val, x;
+      // hash is used to collect data for each Province_State
+      // in this Country_Region
       hash = {};
       ref = this.data;
       for (i = 0, len = ref.length; i < len; i++) {
@@ -952,8 +1011,21 @@ process.umask = function() { return 0; };
 
   };
 
+  // Class CSSE_Data_Province_State
+
   CSSE_Data_Province_State = class CSSE_Data_Province_State {
+    
+      // Constructs an object containing CSSE data for a province/state.
+    // Args:
+    //   @parent: an instance of CSSE_Data_Country_Region
+    //   @data: data for the province/state
+
     constructor(parent, data) {
+      
+      // Method @init()
+      // Calculates the number of cases and deaths.
+      // Adds objects for each sub-region.
+
       this.init = this.init.bind(this);
       this.parent = parent;
       this.data = data;
@@ -965,6 +1037,8 @@ process.umask = function() { return 0; };
 
     init() {
       var county, hash, i, key, len, ref, results, val, x;
+      // hash is used to collect data for each Admin2 
+      // in this Province_State
       hash = {};
       ref = this.data;
       for (i = 0, len = ref.length; i < len; i++) {
@@ -989,8 +1063,20 @@ process.umask = function() { return 0; };
 
   };
 
+  // Class CSSE_Data_Admin2
+
   CSSE_Data_Admin2 = class CSSE_Data_Admin2 {
+    // Constructs an object containing CSSE data for an admin2 area
+    // Args:
+    //   @parent: an instance of CSSE_Data_State_Province
+    //   @data: data for the province/state
+
     constructor(parent, data) {
+      
+      // Method @init()
+      // Calculates the number of cases and deaths.
+      // Adds objects for each sub-region.
+
       this.init = this.init.bind(this);
       this.parent = parent;
       this.data = data;
@@ -1013,8 +1099,9 @@ process.umask = function() { return 0; };
 
   };
 
-  
-  // async
+  // Async function create_CSSE_Covid_19_Data()
+  // Returns an initialized CSSE_Covid_19_Data_Source instance.
+
   create_CSSE_Covid_19_Data = function() {
     var csse_Covid_19_Data;
     csse_Covid_19_Data = new CSSE_Covid_19_Data_Source();

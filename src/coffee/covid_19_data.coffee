@@ -159,12 +159,11 @@ class Covid_19_Data_View_Header
 
     @date_elt = document.createElement('p')
     @date_elt.setAttribute('id', 'cv-data-date')
-    @date_elt.innerText = "#{@parent.date}"
-
-    @header_left = document.createElement('div')
-    @header_left.setAttribute('id', 'header-left')
-    @header_left.appendChild(@date_elt)
-    @elt.appendChild(@header_left)
+    url = "https://github.com/CSSEGISandData/COVID-19"
+    @date_elt.innerHTML = "Data provided by Johns Hopkins University "
+    @date_elt.innerHTML += "Center for Systems Science and Engineering (JHU CSSE) <br>"
+    @date_elt.innerHTML += "Fetched from <a href=\"#{url}\"> #{url} </a> #{@parent.date}"
+    @elt.appendChild(@date_elt)
 
     @toggle_style_button = document.createElement('button')
     @toggle_style_button.setAttribute('id', 'toggle-style-button')
@@ -176,12 +175,20 @@ class Covid_19_Data_View_Header
     @toggle_view_button.innerText = "view by states"
     @toggle_view_button.onclick = @parent.toggle_view
 
+    @header_left = document.createElement('div')
+    @header_left.setAttribute('id', 'header-left')
+    #@elt.appendChild(@header_left)
+
     @header_right = document.createElement('div')
     @header_right.setAttribute('id', 'header-right')
-    @header_right.appendChild(@toggle_style_button)
-    @header_right.appendChild(@toggle_view_button)
-    @elt.appendChild(@header_right)
+    #@elt.appendChild(@header_right)
 
+    @buttons = document.createElement('div')
+    @buttons.setAttribute('id', 'buttons')
+    @buttons.appendChild(@toggle_style_button)
+    @buttons.appendChild(@toggle_view_button)
+    @elt.appendChild(@buttons)
+    
   set_table_type: (type, other_type) =>
     @h1_elt.innerText = "Covid_19_Data_View - #{type}"
     @toggle_view_button.innerText = "View #{other_type}"
