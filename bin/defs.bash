@@ -42,7 +42,7 @@ function build_browser {
     cp build/css/* browser/css/
     browserify build/js/covid_19_data.js > browser/js/covid_19_data.js
     browserify build/js/population_data.js > browser/js/population_data.js
-    browserify build/js/csse_covid_19_data.js > browser/js/csse_covid_19_data.js
+    browserify --exclude node-fetch build/js/csse_covid_19_data.js > browser/js/csse_covid_19_data.js
 }
 
 function build_index {

@@ -1,17 +1,17 @@
 #!/usr/bin/env coffee
 #
 
-fetch = require('node-fetch')
 csv = require('csvtojson')
+fetch = window? && window.fetch || require('node-fetch')
 
 
-# Class CSSE_Covid_19_Data_Source
+# Class CSSE_Covid_19_Data
 #
 # Creates an object used to fetch the raw datat from the Johns Hopkins
 # University Center for Systems Science and Engineering (JHU CSSE)
 # Github repo at https://github.com/CSSEGISandData/COVID-19
 # 
-class CSSE_Covid_19_Data_Source
+class CSSE_Covid_19_Data
 
   constructor: ->
     @path =  "/csse_covid_19_data/csse_covid_19_daily_reports"
@@ -49,23 +49,13 @@ class CSSE_Covid_19_Data_Source
     url = "https://#{@repo_root}/#{@path}/#{csv_file_name}"
     return url
 
-  # Method fetch_url
-  # Args:
-  #  url fetch the url
-  # 
-  # TODO: this method was created to allow fetching from nodejs.  Is
-  # this still relevant? Why not just call fetch directly?
-  # 
-  fetch_url: (url) =>
-    fetch(@url)
-    
-  # async method @fetch_csse_data()
-  # returns data no later than @date.
+  # Async Method @fetch_csse_data()
+  # Returns data for date no later than @date.
   # 
   fetch_csse_data: =>
     @date = new Date()
     @url = @date_to_url(@date)
-    res = await @fetch_url(@url)
+    res = await fetch(@url)
     while res.status != 200
       # not successful so try prior day
       @date.setDate(@date.getDate()-1)
@@ -204,13 +194,13 @@ class CSSE_Data_Admin2
 
 
 # Async function create_CSSE_Covid_19_Data()
-# Returns an initialized CSSE_Covid_19_Data_Source instance.
+# Returns an initialized CSSE_Covid_19_Data instance.
 # 
 create_CSSE_Covid_19_Data = ->
-  csse_Covid_19_Data  = new CSSE_Covid_19_Data_Source()
+  csse_Covid_19_Data  = new CSSE_Covid_19_Data()
   return csse_Covid_19_Data.init()
 
    
-exports.CSSE_Covid_19_Data_Source = CSSE_Covid_19_Data_Source
+exports.CSSE_Covid_19_Data = CSSE_Covid_19_Data
 exports.create = create_CSSE_Covid_19_Data
 
