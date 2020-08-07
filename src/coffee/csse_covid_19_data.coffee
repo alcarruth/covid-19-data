@@ -7,7 +7,7 @@ fetch = window? && window.fetch || require('node-fetch')
 
 # Class CSSE_Covid_19_Data
 #
-# Creates an object used to fetch the raw datat from the Johns Hopkins
+# Creates an object used to fetch the raw data from the Johns Hopkins
 # University Center for Systems Science and Engineering (JHU CSSE)
 # Github repo at https://github.com/CSSEGISandData/COVID-19
 # 
