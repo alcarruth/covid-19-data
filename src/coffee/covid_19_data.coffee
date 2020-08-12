@@ -1,7 +1,7 @@
 #!/usr/bin/env coffee
 #
 
-sortable_table = require('sortable-table')
+{ Sortable_Table } = require('sortable-table')
 population_data = require('./population_data')
 csse_covid_19_data = require('./csse_covid_19_data')
 
@@ -197,7 +197,7 @@ class Covid_19_Data_Table
     @data = spec.data
     @columns = @init_columns(spec.main_column)
     @min_population = spec.min_population || 1
-    @table = new sortable_table.Sortable_Table(@data, @columns)
+    @table = new Sortable_Table(@data, @columns)
     @elt = @table.elt
 
   init_columns: (main_column) =>
