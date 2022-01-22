@@ -21,7 +21,7 @@
   "dependencies": {
     "csv": "^5.3.2",
     "csvtojson": "^2.0.10",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^3.1.1",
     "sortable-table": "git+https://github.com/alcarruth/sortable-table.git"
   },
   "devDependencies": {
