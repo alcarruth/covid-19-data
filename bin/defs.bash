@@ -38,6 +38,10 @@ function build_css {
     cp src/css/light_colors.css build/css
 }
 
+function browserify {
+  node node_modules/browserify/bin/cmd.js $@
+}
+
 function build_browser {
     cp build/css/* browser/css/
     browserify build/js/covid_19_data.js > browser/js/covid_19_data.js
